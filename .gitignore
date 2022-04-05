@@ -12,3 +12,6 @@ _deps
 
 # build folder
 /build
+
+# vscode data
+.vscode

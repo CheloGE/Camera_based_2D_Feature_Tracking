@@ -19,7 +19,8 @@ RUN apt-get update --fix-missing && apt-get upgrade -y && apt-get install -y \
     pkg-config\
     libavcodec-dev\
     libavformat-dev\
-    libswscale-dev
+    libswscale-dev\
+    gdb
 
 # Install opencv 4.5.5
 RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/4.5.5.zip
