@@ -88,7 +88,7 @@ void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool b
         keypoints.push_back(newKeyPoint);
     }
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-    cout << "Shi-Tomasi detection with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+    cout << "Shi-Tomasi detector with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
 
     // visualize results
     if (bVis)
@@ -157,7 +157,7 @@ void detKeypointsHarris(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis
         } // eof loop over cols
     }     // eof loop over rows
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-    cout << "Harris detection with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+    cout << "Harris detector with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
 
     // visualize results
     if (bVis)
@@ -174,4 +174,60 @@ void detKeypointsHarris(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis
 // Detect keypoints in image using modern detectors
 void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis)
 {
+    /*
+        This function inplements various modern keypoint detectors in the following list:
+            - FAST
+            - BRISK
+            - ORB
+            - AKAZE
+            - SIFT
+    */
+
+    cv::Ptr<cv::FeatureDetector> selected_detector; // Generic feature detector pointer to fill the selected detectorType
+
+    if (detectorType.compare("FAST") == 0)
+    {
+        /* Parameters from FAST detector */
+        int thresh = 30;                                  // threshold parameter to control how different the neighbors are from a proposed pixel to be considered keypoint.
+        bool nms = true;                                  // boolean to set if we want to apply non max suppression.
+        cv::FastFeatureDetector::DetectorType detecType = // Type of neighborhood to create TYPE_9_16 (16 pixels around the analyzed pixel and 9 are required to be considered
+            cv::FastFeatureDetector::TYPE_9_16;           // a keypoint), TYPE_7_12, TYPE_5_8
+
+        /* end of parameters */
+
+        selected_detector = cv::FastFeatureDetector::create(thresh, nms, detecType);
+    }
+    else if (detectorType.compare("BRISK") == 0)
+    {
+    }
+    else if (detectorType.compare("ORB") == 0)
+    {
+    }
+    else if (detectorType.compare("AKAZE") == 0)
+    {
+    }
+    else if (detectorType.compare("SIFT") == 0)
+    {
+    }
+    else
+    {
+        cerr << "Invalid " << detectorType << "Only FAST, BRISK, ORB, AKAZE and SIFT are supported from modern detectors" << endl;
+    }
+
+    /* Detection part */
+    double t = (double)cv::getTickCount();
+    selected_detector->detect(img, keypoints);
+    t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    cout << detectorType << " detector with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+
+    // visualize results
+    if (bVis)
+    {
+        cv::Mat visImage = img.clone();
+        cv::drawKeypoints(img, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+        string windowName = detectorType + " Detector Results";
+        cv::namedWindow(windowName, 6);
+        imshow(windowName, visImage);
+        cv::waitKey(0);
+    }
 }
