@@ -188,19 +188,20 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     if (detectorType.compare("FAST") == 0)
     {
         /* Parameters from FAST detector */
+
         int thresh = 30;                                  // threshold parameter to control how different the neighbors are from a proposed pixel to be considered keypoint.
         bool nms = true;                                  // boolean to set if we want to apply non max suppression.
         cv::FastFeatureDetector::DetectorType detecType = // Type of neighborhood to create TYPE_9_16 (16 pixels around the analyzed pixel and 9 are required to be considered
             cv::FastFeatureDetector::TYPE_9_16;           // a keypoint), TYPE_7_12, TYPE_5_8
 
         /* detector creation */
-
         selected_detector = cv::FastFeatureDetector::create(thresh, nms, detecType);
     }
     else if (detectorType.compare("BRISK") == 0)
     {
         /* Parameters from BRISK detector */
         /* BRISK detector uses AGAST (Adaptive and Generic Accelerated Segment Test) */
+
         int thresh = 30;           // AGAST detection threshold score.
         int octaves = 3;           // Image pyramid octaves. Image is blurred with different coefficients to \
                             obtain an octave space. if 3 then 3 downsamples are done, 0 means no downsample (original image)
@@ -211,6 +212,27 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     }
     else if (detectorType.compare("ORB") == 0)
     {
+
+        /*
+            ORB detector uses FAST algorithm with some additional features to be scale and rotation invariant
+             more info can be found here: https://docs.opencv.org/3.4/db/d95/classcv_1_1ORB.html
+        */
+
+        /* Parameters from ORB detector */
+
+        int nfeatures = 500;           // The maximum number of features to retain.
+        float scaleFactor = 1.2f;      // Pyramid decimation ratio, greater than 1. scaleFactor==2 means the classical pyramid
+        int nlevels = 8;               // The number of pyramid levels.
+        int edgeThreshold = 31;        // This is size of the border where the features are not detected. It should roughly match the patchSize parameter.
+        int firstLevel = 0;            // The level of pyramid to put source image to. Previous layers are filled with upscaled source image.
+        int WTA_K = 2;                 // The number of points that produce each element of the oriented BRIEF descriptor
+        cv::ORB::ScoreType scoreType = // The default HARRIS_SCORE means that Harris algorithm is used to rank features (used to retain best nfeatures)
+            cv::ORB::HARRIS_SCORE;     // FAST_SCORE is alternative value that produces slightly less stable keypoints, but it is a little faster to compute.
+        int patchSize = 31;            // Size of the patch used by the oriented BRIEF descriptor.
+        int fastThreshold = 20;        // the FAST threshold
+
+        /* detector creation */
+        selected_detector = cv::ORB::create(nfeatures, scaleFactor, nlevels, edgeThreshold, firstLevel, WTA_K, scoreType, patchSize, fastThreshold);
     }
     else if (detectorType.compare("AKAZE") == 0)
     {
