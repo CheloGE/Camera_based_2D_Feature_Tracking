@@ -70,6 +70,26 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     }
     else if (descriptorType.compare("ORB") == 0)
     {
+        /*
+            ORB detector uses a modified version of BRIEF called rBRIEF algorithm with some additional features to account for keypoint orientation
+             more info can be found here: https://docs.opencv.org/3.4/db/d95/classcv_1_1ORB.html
+        */
+
+        /* Parameters from ORB descriptor */
+
+        int nfeatures = 500;           // The maximum number of features to retain.
+        float scaleFactor = 1.2f;      // Pyramid decimation ratio, greater than 1. scaleFactor==2 means the classical pyramid
+        int nlevels = 8;               // The number of pyramid levels.
+        int edgeThreshold = 31;        // This is size of the border where the features are not detected. It should roughly match the patchSize parameter.
+        int firstLevel = 0;            // The level of pyramid to put source image to. Previous layers are filled with upscaled source image.
+        int WTA_K = 2;                 // The number of points that produce each element of the oriented BRIEF descriptor
+        cv::ORB::ScoreType scoreType = // The default HARRIS_SCORE means that Harris algorithm is used to rank features (used to retain best nfeatures)
+            cv::ORB::HARRIS_SCORE;     // FAST_SCORE is alternative value that produces slightly less stable keypoints, but it is a little faster to compute.
+        int patchSize = 31;            // Size of the patch used by the oriented BRIEF descriptor.
+        int fastThreshold = 20;        // the FAST threshold
+
+        /* detector creation */
+        extractor = cv::ORB::create(nfeatures, scaleFactor, nlevels, edgeThreshold, firstLevel, WTA_K, scoreType, patchSize, fastThreshold);
     }
     else if (descriptorType.compare("FREAK") == 0)
     {
