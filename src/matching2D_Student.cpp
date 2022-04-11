@@ -37,6 +37,16 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 // Use one of several types of state-of-art descriptors to uniquely identify keypoints
 void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, string descriptorType)
 {
+    /*
+        This function inplements various keypoint descriptos in the following list:
+            - BRISK
+            - BRIEF
+            - ORB
+            - FREAK
+            - AKAZE
+            - SIFT
+
+    */
     // select appropriate descriptor
     cv::Ptr<cv::DescriptorExtractor> extractor;
     if (descriptorType.compare("BRISK") == 0)
@@ -48,10 +58,31 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
 
         extractor = cv::BRISK::create(threshold, octaves, patternScale);
     }
+    else if (descriptorType.compare("BRIEF") == 0)
+    {
+        /* Descriptor parameters */
+
+        int len_in_bytes = 32;        // length of the descriptor in bytes, valid values are: 16, 32 (default) or 64.
+        bool use_orientation = false; // sample patterns using keypoints orientation, disabled by default.
+
+        /* descriptor creation */
+        extractor = cv::xfeatures2d::BriefDescriptorExtractor::create(len_in_bytes, use_orientation);
+    }
+    else if (descriptorType.compare("ORB") == 0)
+    {
+    }
+    else if (descriptorType.compare("FREAK") == 0)
+    {
+    }
+    else if (descriptorType.compare("AKAZE") == 0)
+    {
+    }
+    else if (descriptorType.compare("SIFT") == 0)
+    {
+    }
     else
     {
-
-        //...
+        cerr << "Invalid " << descriptorType << ". Only BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT are supported descriptors" << endl;
     }
 
     // perform feature description
@@ -272,7 +303,7 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     }
     else
     {
-        cerr << "Invalid " << detectorType << "Only FAST, BRISK, ORB, AKAZE and SIFT are supported from modern detectors" << endl;
+        cerr << "Invalid " << detectorType << ". Only FAST, BRISK, ORB, AKAZE and SIFT are supported from modern detectors" << endl;
     }
 
     /* Detection part */
