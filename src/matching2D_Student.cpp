@@ -253,6 +253,22 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     }
     else if (detectorType.compare("SIFT") == 0)
     {
+
+        /*
+            SIFT detector uses Laplacian of Gaussian (LoG) algorithm to detect features at various scales.
+            more info can be found here: https://docs.opencv.org/4.x/d7/d60/classcv_1_1SIFT.html
+        */
+
+        /* Parameters from SIFT detector */
+
+        int nfeatures = 0;            // Number of best features to retain. The features are ranked by their scores (measured in SIFT algorithm as the local contrast)
+        int nOctaveLayers = 3;        // The number of layers in each octave. The number of octaves is computed automatically from the image resolution.
+        double contrastThresh = 0.04; // The contrast threshold used to filter out weak features in semi-uniform (low-contrast) regions. The larger the threshold, the less features are produced by the detector.
+        double edgeThreshold = 10;    // The threshold used to filter out edge-like features. The larger the edgeThreshold, the less features are filtered out (more features are retained).
+        double sigma = 1.6;           // The sigma of the Gaussian applied to the input image at the octave #0.
+
+        /* detector creation */
+        selected_detector = cv::SIFT::create(nfeatures, nOctaveLayers, contrastThresh, edgeThreshold, sigma);
     }
     else
     {
