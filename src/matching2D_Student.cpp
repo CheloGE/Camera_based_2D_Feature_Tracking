@@ -51,16 +51,16 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     cv::Ptr<cv::DescriptorExtractor> extractor;
     if (descriptorType.compare("BRISK") == 0)
     {
-
+        /* Parameters for BRISK descriptor */
         int threshold = 30;        // FAST/AGAST detection threshold score.
         int octaves = 3;           // detection octaves (use 0 to do single scale)
         float patternScale = 1.0f; // apply this scale to the pattern used for sampling the neighbourhood of a keypoint.
-
+        /* descriptor creation */
         extractor = cv::BRISK::create(threshold, octaves, patternScale);
     }
     else if (descriptorType.compare("BRIEF") == 0)
     {
-        /* Descriptor parameters */
+        /* Parameters for BRIEF descriptor */
 
         int len_in_bytes = 32;        // length of the descriptor in bytes, valid values are: 16, 32 (default) or 64.
         bool use_orientation = false; // sample patterns using keypoints orientation, disabled by default.
@@ -75,7 +75,7 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
              more info can be found here: https://docs.opencv.org/3.4/db/d95/classcv_1_1ORB.html
         */
 
-        /* Parameters from ORB descriptor */
+        /* Parameters for ORB descriptor */
 
         int nfeatures = 500;           // The maximum number of features to retain.
         float scaleFactor = 1.2f;      // Pyramid decimation ratio, greater than 1. scaleFactor==2 means the classical pyramid
@@ -93,7 +93,7 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     }
     else if (descriptorType.compare("FREAK") == 0)
     {
-        /* Parameters from FREAK descriptor */
+        /* Parameters for FREAK descriptor */
         bool use_orientationNormalized = true; // Enable orientation normalization.
         bool use_scaleNormalized = true;       // Enable scale normalization.
         float patternScale = 22.0f;            // Scaling of the description pattern.
@@ -104,6 +104,19 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     }
     else if (descriptorType.compare("AKAZE") == 0)
     {
+        /* Parameters for AKAZE descriptor */
+        cv::AKAZE::DescriptorType descriptor_type = // Type of the extracted descriptor: DESCRIPTOR_KAZE, DESCRIPTOR_KAZE_UPRIGHT,
+            cv::AKAZE::DESCRIPTOR_MLDB;             // DESCRIPTOR_MLDB or DESCRIPTOR_MLDB_UPRIGHT.
+        int descriptor_size = 0;                    // Size of the descriptor in bits. 0 -> Full size
+        int descriptor_channels = 3;                // Number of channels in the descriptor (1, 2, 3)
+        float threshold = 0.001f;                   // Detector response threshold to accept point
+        int nOctaves = 4;                           // Maximum octave evolution of the image
+        int nOctaveLayers = 4;                      // Default number of sublevels per scale level
+        cv::KAZE::DiffusivityType diffusivity =     // Diffusivity type. DIFF_PM_G1, DIFF_PM_G2, DIFF_WEICKERT or DIFF_CHARBONNIER
+            cv::KAZE::DIFF_PM_G2;
+
+        /* detector creation */
+        extractor = cv::AKAZE::create(descriptor_type, descriptor_size, descriptor_channels, threshold, nOctaves, nOctaveLayers, diffusivity);
     }
     else if (descriptorType.compare("SIFT") == 0)
     {
