@@ -93,6 +93,14 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     }
     else if (descriptorType.compare("FREAK") == 0)
     {
+        /* Parameters from FREAK descriptor */
+        bool use_orientationNormalized = true; // Enable orientation normalization.
+        bool use_scaleNormalized = true;       // Enable scale normalization.
+        float patternScale = 22.0f;            // Scaling of the description pattern.
+        int nOctaves = 4;                      // Number of pyramid octaves covered by the detected keypoints.
+
+        /* detector creation */
+        extractor = cv::xfeatures2d::FREAK::create(use_orientationNormalized, use_scaleNormalized, patternScale, nOctaves);
     }
     else if (descriptorType.compare("AKAZE") == 0)
     {
