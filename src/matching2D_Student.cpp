@@ -236,6 +236,20 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     }
     else if (detectorType.compare("AKAZE") == 0)
     {
+        /* Parameters from AKAZE detector */
+
+        cv::AKAZE::DescriptorType descriptor_type = // Type of the extracted descriptor: DESCRIPTOR_KAZE, DESCRIPTOR_KAZE_UPRIGHT,
+            cv::AKAZE::DESCRIPTOR_MLDB;             // DESCRIPTOR_MLDB or DESCRIPTOR_MLDB_UPRIGHT.
+        int descriptor_size = 0;                    // Size of the descriptor in bits. 0 -> Full size
+        int descriptor_channels = 3;                // Number of channels in the descriptor (1, 2, 3)
+        float threshold = 0.001f;                   // Detector response threshold to accept point
+        int nOctaves = 4;                           // Maximum octave evolution of the image
+        int nOctaveLayers = 4;                      // Default number of sublevels per scale level
+        cv::KAZE::DiffusivityType diffusivity =     // Diffusivity type. DIFF_PM_G1, DIFF_PM_G2, DIFF_WEICKERT or DIFF_CHARBONNIER
+            cv::KAZE::DIFF_PM_G2;
+
+        /* detector creation */
+        selected_detector = cv::AKAZE::create(descriptor_type, descriptor_size, descriptor_channels, threshold, nOctaves, nOctaveLayers, diffusivity);
     }
     else if (detectorType.compare("SIFT") == 0)
     {
