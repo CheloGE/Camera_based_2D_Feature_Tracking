@@ -13,7 +13,20 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 
     if (matcherType.compare("MAT_BF") == 0)
     {
-        int normType = cv::NORM_HAMMING;
+        int normType;
+        if (descriptorType.compare("DES_BINARY") == 0)
+        {
+            normType = cv::NORM_HAMMING;
+        }
+        else if (descriptorType.compare("DES_HOG") == 0)
+        {
+            normType = cv::NORM_L2;
+        }
+        else
+        {
+            cerr << "Invalid descriptor type: " << descriptorType << ". Only options are: 'DES_BINARY' or 'DES_HOG' " << endl;
+        }
+
         matcher = cv::BFMatcher::create(normType, crossCheck);
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
@@ -88,7 +101,7 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
         int patchSize = 31;            // Size of the patch used by the oriented BRIEF descriptor.
         int fastThreshold = 20;        // the FAST threshold
 
-        /* detector creation */
+        /* descriptor creation */
         extractor = cv::ORB::create(nfeatures, scaleFactor, nlevels, edgeThreshold, firstLevel, WTA_K, scoreType, patchSize, fastThreshold);
     }
     else if (descriptorType.compare("FREAK") == 0)
@@ -99,7 +112,7 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
         float patternScale = 22.0f;            // Scaling of the description pattern.
         int nOctaves = 4;                      // Number of pyramid octaves covered by the detected keypoints.
 
-        /* detector creation */
+        /* descriptor creation */
         extractor = cv::xfeatures2d::FREAK::create(use_orientationNormalized, use_scaleNormalized, patternScale, nOctaves);
     }
     else if (descriptorType.compare("AKAZE") == 0)
@@ -115,11 +128,26 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
         cv::KAZE::DiffusivityType diffusivity =     // Diffusivity type. DIFF_PM_G1, DIFF_PM_G2, DIFF_WEICKERT or DIFF_CHARBONNIER
             cv::KAZE::DIFF_PM_G2;
 
-        /* detector creation */
+        /* descriptor creation */
         extractor = cv::AKAZE::create(descriptor_type, descriptor_size, descriptor_channels, threshold, nOctaves, nOctaveLayers, diffusivity);
     }
     else if (descriptorType.compare("SIFT") == 0)
     {
+        /*
+            SIFT detector uses Histogram of Oriented Gradients (HOG) algorithm to describe keypoints.
+            more info can be found here: https://docs.opencv.org/4.x/d7/d60/classcv_1_1SIFT.html
+        */
+
+        /* Parameters from SIFT descriptor */
+
+        int nfeatures = 0;            // Number of best features to retain. The features are ranked by their scores (measured in SIFT algorithm as the local contrast)
+        int nOctaveLayers = 3;        // The number of layers in each octave. The number of octaves is computed automatically from the image resolution.
+        double contrastThresh = 0.04; // The contrast threshold used to filter out weak features in semi-uniform (low-contrast) regions. The larger the threshold, the less features are produced by the detector.
+        double edgeThreshold = 10;    // The threshold used to filter out edge-like features. The larger the edgeThreshold, the less features are filtered out (more features are retained).
+        double sigma = 1.6;           // The sigma of the Gaussian applied to the input image at the octave #0.
+
+        /* descriptor creation */
+        extractor = cv::SIFT::create(nfeatures, nOctaveLayers, contrastThresh, edgeThreshold, sigma);
     }
     else
     {
