@@ -26,12 +26,17 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
         {
             cerr << "Invalid descriptor type: " << descriptorType << ". Only options are: 'DES_BINARY' or 'DES_HOG' " << endl;
         }
-
+        double t = (double)cv::getTickCount();
         matcher = cv::BFMatcher::create(normType, crossCheck);
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        cout << matcherType << " matcher took " << 1000 * t / 1.0 << " ms" << endl;
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
-        // ...
+        double t = (double)cv::getTickCount();
+        matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        cout << matcherType << " matcher took " << 1000 * t / 1.0 << " ms" << endl;
     }
 
     // perform matching task
