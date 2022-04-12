@@ -33,22 +33,37 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
-        double t = (double)cv::getTickCount();
         matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
-        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-        cout << matcherType << " matcher took " << 1000 * t / 1.0 << " ms" << endl;
     }
 
     // perform matching task
     if (selectorType.compare("SEL_NN") == 0)
     { // nearest neighbor (best match)
-
+        double t = (double)cv::getTickCount();
         matcher->match(descSource, descRef, matches); // Finds the best match for each descriptor in desc1
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        cout << matcherType << " matcher "
+             << "with " << selectorType << " algorithm took " << 1000 * t / 1.0 << " ms" << endl;
     }
     else if (selectorType.compare("SEL_KNN") == 0)
     { // k nearest neighbors (k=2)
+        std::vector<std::vector<cv::DMatch>> knn_matches;
+        double t = (double)cv::getTickCount();
+        matcher->knnMatch(descSource, descRef, knn_matches, 2);
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        cout << matcherType << " matcher "
+             << "with " << selectorType << " algorithm took " << 1000 * t / 1.0 << " ms" << endl;
 
-        // ...
+        // filter matches using K-Neares Neighbor Distance Ratio (NNDR)
+        double minDescDistRatio_thresh = 0.8; // matches above this tresh are very similar and thus umbiguous, hence removed.s
+        for (std::vector<std::vector<cv::DMatch>>::iterator it = knn_matches.begin(); it != knn_matches.end(); ++it)
+        {
+            std::vector<cv::DMatch> curr_k_neighbors_pair = *it;
+            if ((curr_k_neighbors_pair[0].distance / curr_k_neighbors_pair[1].distance) < minDescDistRatio_thresh)
+            {
+                matches.push_back(curr_k_neighbors_pair[0]);
+            }
+        }
     }
 }
 
