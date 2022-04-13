@@ -33,7 +33,21 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
-        matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
+
+        if (descriptorType.compare("DES_BINARY") == 0)
+        {
+            // FLANN change to work with HAMMING Norm, because it uses L2 Norm by default
+            // reference: https://stackoverflow.com/questions/43830849/opencv-use-flann-with-orb-descriptors-to-match-features
+            matcher = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2));
+        }
+        else if (descriptorType.compare("DES_HOG") == 0)
+        {
+            matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
+        }
+        else
+        {
+            cerr << "Invalid descriptor type: " << descriptorType << ". Only options are: 'DES_BINARY' or 'DES_HOG' " << endl;
+        }
     }
 
     // perform matching task
