@@ -73,6 +73,11 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
         for (std::vector<std::vector<cv::DMatch>>::iterator it = knn_matches.begin(); it != knn_matches.end(); ++it)
         {
             std::vector<cv::DMatch> curr_k_neighbors_pair = *it;
+            if (curr_k_neighbors_pair.size() != 2) // sanity check in case knnMatch does not found a pair.
+            {
+                continue;
+            }
+
             if ((curr_k_neighbors_pair[0].distance / curr_k_neighbors_pair[1].distance) < minDescDistRatio_thresh)
             {
                 matches.push_back(curr_k_neighbors_pair[0]);
