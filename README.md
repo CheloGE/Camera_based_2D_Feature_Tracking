@@ -59,3 +59,7 @@ Alternatively you can setup the environment using the dockerfile in this project
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
 4. Run it: `./2D_feature_tracking`.
+
+## Result analysis
+
+The results analysis can be reviewed in the [Comparison_Analysis.md](Comparison_Analysis.md) file.
