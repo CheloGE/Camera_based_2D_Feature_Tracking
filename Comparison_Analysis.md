@@ -2,7 +2,7 @@
 
 In this section we will compare all detectors and descriptors in order to rank them and select the top 3 combinations between detectors and descriptors for our particular use case.
 
-## Keypoint detection comparison
+## Keypoint detection comparison (Performance Evaluation 1)
 
 The Detectors that were analyzed are the following:
 
@@ -37,7 +37,9 @@ The distribution of each detector is best illustrated with the following boxplot
 
 ![](images/results/keypoint_detection/keypoints_detec_boxplot.png)
 
-## Number of matched keypoints
+From the plots above we can see that the BRISK detector is the algorithm that finds the most keypoints for our use case and that SIFT is very consistent as it has a very small STD which makes it more precise and perhaps reliable for tracking purposes (but it finds way less kepoints than BRISK).
+
+## Number of matched keypoints (Performance Evaluation 2)
 
 From the implementation of different detectors and descriptors we have compiled a series of data. One of them was the number of matches per each combination of detectors and descriptors. The compiled result is shown in the table below:
 
@@ -56,7 +58,7 @@ To visualize the results obtained in this section, we also produced some boxplot
 ![](images/results/matches_analysis/number_of_matches_boxplot.png)
 
 
-## Detection-Descriptor time comparison
+## Detection-Descriptor time comparison (Performance Evaluation 3)
 
 For the different combinations of detections and descriptors we took the total time between the detection of keypoints and the extraction of features to build a descriptor vector. The results are compiled in the following table:
 
@@ -68,7 +70,7 @@ Once again to visualize the final results, we performed a boxplot comparison as 
 
 ## Conclusions 
 
-From all the box plots it seems that FAST detector with ORB, BRIEF or BRISK deliver the fastest results of all. However, in terms of matches the best combinations are between BRISK detector and BRISK, BRIEF or SIFT descriptors as they output more than 170 matches in average.
+From all the box plots it seems that the TOP 3 quickes combinations are between the FAST detector with ORB, BRIEF and BRISK. Although ORB-BRISK and ORB-BRIEF are quite closed like in TOP 5 (Performance Evaluation 3 results). However, in terms of matches the best combinations are between BRISK detector and BRISK, BRIEF or SIFT descriptors as they output more than 170 matches in average (Performance Evaluation 2 results).
 
 Nevertheless, if I have to choose I will go with BRISK-BRIEF pair. Since although it is not the quickest combination, it is almost as quick as FAST with ORB, but it gets a lot of matches with very good performance as can be visually seen below:
 
