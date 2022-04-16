@@ -14,13 +14,19 @@ RUN apt-get update --fix-missing && apt-get upgrade -y && apt-get install -y \
     zip \
     zlib1g-dev \
     libpcl-dev \
-    cmake\
     libgtk2.0-dev\ 
     pkg-config\
     libavcodec-dev\
     libavformat-dev\
     libswscale-dev\
     gdb
+
+# Install cmake 
+WORKDIR /opt
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1-linux-x86_64.sh
+RUN chmod +x /opt/cmake-3.23.1-linux-x86_64.sh
+RUN bash cmake-3.23.1-linux-x86_64.sh
+RUN ln -s /opt/cmake-3.23.1-linux-x86_64/bin/* /usr/local/bin/
 
 # Install opencv 4.5.5
 RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/4.5.5.zip
